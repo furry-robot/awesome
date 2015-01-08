@@ -4,3 +4,6 @@
 [submodule "tyrannical"]
 	path = tyrannical
 	url = https://github.com/furry-robot/tyrannical
+[submodule "lain"]
+	path = lain
+	url = https://github.com/furry-robot/lain
