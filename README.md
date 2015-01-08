@@ -8,19 +8,19 @@ Using Steamburn theme by [copycat-killer/awesome-copycats](https://github.com/co
 
 Features
 ------------------------
-* Revelation
-* Tyrannical
-* Awesompd
-* Custom Key-Bindings
+* Awesompd [alexander-yakushev.awesompd](https://github.com/alexander-yakushev/awesompd)
 * Custom Awesome Menu
+* Custom Key-Bindings
+* Lain [copycat-killer/lain](https://github.com/copycat-killer/lain)
+* Revelation [guotsuan/awesome-revelation](https://github.com/guotsuan/awesome-revelation)
+* Tyrannical [Elv13/tyrannical](https://github.com/Elv13/tyrannical)
 * more soon...
 
 Gallery
 ----------
-![](http://i.imgur.com/SABBoF9.png)
-![](http://i.imgur.com/rTwxqHY.png)
-![](http://i.imgur.com/6K29SDO.png)
-![](http://i.imgur.com/BFiWgub.png)
+![](http://i.imgur.com/a7E1to9.png)
+![](http://i.imgur.com/u8h3IF8.png)
+![](http://i.imgur.com/xrdgAAC.png)
 
 Changlelog
 -------------------------
