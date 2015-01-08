@@ -7,3 +7,6 @@
 [submodule "lain"]
 	path = lain
 	url = https://github.com/furry-robot/lain
+[submodule "revelation"]
+	path = revelation
+	url = https://github.com/furry-robot/revelation
