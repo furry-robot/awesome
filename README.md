@@ -3,10 +3,10 @@ Awesome WM Furry-Robot
 
 Description
 ---------------
-Custom Theme for Awesome WM +3.5.
-Heavily Based on Steamburn theme by [copycat-killer/awesome-copycats](https://github.com/copycat-killer/awesome-copycats). Notable differences from original:
+Custom Desktop for Awesome WM +3.5.
+Using Steamburn theme by [copycat-killer/awesome-copycats](https://github.com/copycat-killer/awesome-copycats).
 
-Differences
+Features
 ------------------------
 * Revelation
 * Tyrannical
