@@ -1,3 +1,6 @@
 [submodule "awesompd"]
 	path = awesompd
 	url = https://github.com/furry-robot/awesompd
+[submodule "tyrannical"]
+	path = tyrannical
+	url = https://github.com/furry-robot/tyrannical
