@@ -1,4 +1,4 @@
-
+--{{{ Required
 -- Standard awesome library
 local gears = require("gears")
 local awful = require("awful")
@@ -17,6 +17,10 @@ local beautiful = require("beautiful")
 
 -- Notification library
 local naughty = require("naughty")
+
+-- Keydoc
+local keydoc = require("keydoc")
+--}}}
 
 -- {{{ Error handling
 if awesome.startup_errors then
@@ -51,6 +55,8 @@ function run_once(cmd)
   awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
+run_once( os.getenv("HOME") .. "/.config/awesome/themes/steamburn/.fehbg")
+run_once("compton -CGb")
 run_once("nm-applet")
 run_once("thunar --daemon")
 run_once("urxvtd")
@@ -108,7 +114,7 @@ tyrannical.settings.mwfact = 0.66
 tyrannical.tags = {
     {
         -- Main
-        name        = "♲",
+        name        = "♻",
         init        = true,
         exlusive    = false,
         screen      = {1},
@@ -428,6 +434,9 @@ for s = 1, screen.count() do
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s })
 
+    -- Empty wibox for conky
+    -- mystatusbar = awful.wibox({ position = "bottom", screen = 1, ontop = false, width = 1, height = 16 })
+    
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
     left_layout:add(first)
@@ -470,6 +479,9 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey }, "Escape", awful.tag.history.restore),
 
+    -- Keydoc 
+    awful.key({ modkey, }, "F1", keydoc.display),
+    
     -- Non-empty tag browsing
     awful.key({ altkey }, "Left", function () lain.util.tag_view_nonempty(-1) end),
     awful.key({ altkey }, "Right", function () lain.util.tag_view_nonempty(1) end),
@@ -519,9 +531,10 @@ globalkeys = awful.util.table.join(
         mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
     end),
 
+    keydoc.group("Layout Manipulation"),
     -- Layout manipulation
-    awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
-    awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
+    awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end, "First"),
+    awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end, "Second"),
     awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end),
     awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
@@ -557,10 +570,11 @@ globalkeys = awful.util.table.join(
         awful.util.spawn("scrot -e 'mv $f ~/pictures/screenshots/ 2>/dev/null'")
     end),
 
+    keydoc.group("Standard"),
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
-    awful.key({ modkey, "Control" }, "r",      awesome.restart),
-    awful.key({ modkey, "Shift"   }, "q",      awesome.quit),
+    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end, "Spawn Terminal"),
+    awful.key({ modkey, "Control" }, "r",      awesome.restart, "Restart Awesome"),
+    awful.key({ modkey, "Shift"   }, "q",      awesome.quit, "Quit Awesome"),
 
     -- Dropdown terminal
     awful.key({ modkey,	          }, "z",      function () drop(terminal) end),
@@ -633,14 +647,39 @@ globalkeys = awful.util.table.join(
     -- awful.key({ modkey }, "q", function () awful.util.spawn(browser) end),
     awful.key({ modkey }, "g", function () awful.util.spawn(gui_editor) end),
     awful.key({ modkey }, "i", function () awful.util.spawn(graphics) end),
-
+    
+    -- Prompt
+    --awful.key({ modkey }, "r", function () mypromptbox[mouse.screen]:run() end),
+    awful.key({ modkey }, "r",
+        function ()
+            awful.prompt.run({ prompt = "Run: ", hooks = {
+                {{         },"Return",function(command)
+                    local result = awful.util.spawn(command)
+                    awful.util.spawn()
+                                mypromptbox[mouse.screen].widget:set_text(type(result) == "string" and result or "")
+                    return true
+                end},
+                {{"Mod1"   },"Return",function(command)
+                    local result = awful.util.spawn(command,{intrusive=true})
+                    mypromptbox[mouse.screen].widget:set_text(type(result) == "string" and result or "")
+                    return true
+                end},
+                {{"Shift"  },"Return",function(command)
+                    local result = awful.util.spawn(command,{intrusive=true,ontop=true,floating=true})
+                    mypromptbox[mouse.screen].widget:set_text(type(result) == "string" and result or "")
+                    return true
+                end}
+            }},
+            mypromptbox[mouse.screen].widget,nil,
+            awful.completion.shell,
+            awful.util.getdir("cache") .. "/history")
+        end),
+    
     awful.key({ modkey }, "q",
         function ()
             awful.util.spawn(terminal,{intrusive=true, floating=true})
         end),
     
-    -- Prompt
-    awful.key({ modkey }, "r", function () mypromptbox[mouse.screen]:run() end),
     awful.key({ modkey }, "x",
               function ()
                   awful.prompt.run({ prompt = "Run Lua code: " },

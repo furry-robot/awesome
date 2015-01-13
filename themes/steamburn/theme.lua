@@ -9,7 +9,9 @@
 theme                               = {}
 
 themes_dir                          = os.getenv("HOME") .. "/.config/awesome/themes/steamburn"
-theme.wallpaper                     = themes_dir .. "/wall.jpe"
+--theme.wallpaper                   = themes_dir .. "/wall.jpe"
+--theme.wallpaper_cmd                 = { "feh --bg-scale ~/.config/awesome/themes/steamburn/matrix.jpg" }
+--theme.wallpaper_cmd = { "sh -c 'eval `cat ~/.fehbg`'" }
 
 theme.font                          = "Tamsyn 9.5"
 theme.fg_normal                     = "#e2ccb0"
@@ -61,5 +63,9 @@ theme.layout_txt_centerfair         = "[cf]"
 theme.layout_txt_cascade        =  "[cd]"
 theme.layout_txt_cascadetile    = "[cdt]"
 theme.layout_txt_centerwork    = "[cw]"
+
+theme.fg_widget_value = "#FCFEFF"
+theme.fg_widget_clock = "#FCFEFF"
+theme.fg_widget_value_important = "#FCFEFF"
 
 return theme

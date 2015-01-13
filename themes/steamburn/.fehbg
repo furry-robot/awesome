@@ -1,0 +1,3 @@
+#!/bin/bash
+
+feh --bg-scale ~/.config/awesome/themes/steamburn/tea.jpg
