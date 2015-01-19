@@ -13,7 +13,7 @@ local revelation = require("revelation")
 local awesompd = require("awesompd/awesompd")
 
 -- Shortcuts
---local shorter = require( "shorter" )
+local shorter = require("shorter")
 
 -- Theme handling library
 local beautiful = require("beautiful")
@@ -124,7 +124,7 @@ tyrannical.tags = {
         layout      = awful.layout.suit.floating,
         class       = {}
     },
-    --[[{
+    {
         -- Term
         name        = "⌥",                 -- Call the tag "Term"
         init        = false,                   -- Load the tag on startup
@@ -135,16 +135,16 @@ tyrannical.tags = {
         class       = { --Accept the following classes, refuse everything else (because of "exclusive=true")
                         "xterm" , "urxvt" , "URxvt" ,"XTerm"
         }
-    } ,]]
+    } ,
     {
         -- Web
         name        = "✉",
         init        = true,
         exclusive   = true,
         screen      = 1,
-        layout      = lain.layout.uselesstile,
+        layout      = lain.layout.cascadetile,
         exec_once   = { "chromium" },
-        class       = { "Chromium", "Deluge", "Deluge-Gtk", "Birdie", "Urxvt" }
+        class       = { "Chromium", "Deluge", "Deluge-Gtk" }
     } ,
     {
         -- Files
@@ -152,7 +152,7 @@ tyrannical.tags = {
         init        = false,
         exclusive   = false,
         screen      = 1,
-        layout      = lain.layout.uselesstile,
+        layout      = lain.layout.cascadetile,
         -- exec_once   = {"Thunar"}, When the tag is accessed for the first time, execute this command
         class       = { "Thunar", "Xarchiver" }
     } ,
@@ -162,7 +162,7 @@ tyrannical.tags = {
         init        = false,
         exclusive   = true,
         screen      = 1,
-        layout      = lain.layout.uselesstile,
+        layout      = lain.layout.cascadetile,
         class       = { "Gvim", "Atom", "Brackets" }
     } ,
     {
@@ -171,8 +171,8 @@ tyrannical.tags = {
         init        = false,
         exclusive   = true,
         screen      = 1,
-        layout      = lain.layout.uselesstile,
-        class       = { "Vlc", "SimpleScreenRecorder" }
+        layout      = lain.layout.cascadetile,
+        class       = { "Vlc" }
     },
     {
         -- Games
@@ -181,17 +181,17 @@ tyrannical.tags = {
         exclusive   = true,
         screen      = 1,
         layout      = awful.layout.suit.floating,
-        class       = { "Wine", "Steam", "PlayOnLinux", "hl_linux" }
+        class       = { "Wine", "Steam", "PlayOnLinux" }
     },
     {
-        name        = "gimp",
+        name        = "doc",
         init        = false, -- This tag wont be created at startup, but will be when one of the
                              -- client in the "class" section will start. It will be created on
                              -- the client startup screen
         exclusive   = true,
-        layout      = lain.layout.uselesstile,
-        class       = { "Gimp" }
-    } ,
+        layout      = lain.layout.cascadetile,
+        class       = { "Assistant","Okular", "Evince","EPDFviewer","xpdf","Xpdf","Zathura"}
+    },
 }
 
 -- Ignore the tag "exclusive" property for the following clients (matched by classes)
@@ -201,7 +201,7 @@ tyrannical.properties.intrusive = {
 
 -- Ignore the tiled layout for the matching clients
 tyrannical.properties.floating = {
-    "Wine", "wine", "PlayOnLinux", "Birdie", "urxvt", "SimpleScreenRecorder"
+    "Wine", "wine", "PlayOnLinux"
 }
 
 -- Make the matching clients (by classes) on top of the default layout
@@ -211,7 +211,7 @@ tyrannical.properties.ontop = {
 
 -- Force the matching clients (by classes) to be centered on the screen on init
 tyrannical.properties.centered = {
-    "urxvt", "Wine", "PlayOnLinux", "SimpleScreenRecorder"
+    "urxvt", "Wine", "PlayOnLinux"
 }
 
 tyrannical.settings.block_children_focus_stealing = true --Block popups ()
@@ -475,298 +475,10 @@ root.buttons(awful.util.table.join(
 ))
 -- }}}
 
--- {{{ Key bindings
-globalkeys = awful.util.table.join(
-    -- Tag browsing
-    awful.key({ modkey }, "Left",   awful.tag.viewprev       ),
-    awful.key({ modkey }, "Right",  awful.tag.viewnext       ),
-    awful.key({ modkey }, "Escape", awful.tag.history.restore),
 
-    -- Keydoc 
-    awful.key({ modkey, }, "F1", keydoc.display),
-    
-    -- Non-empty tag browsing
-    awful.key({ altkey }, "Left", function () lain.util.tag_view_nonempty(-1) end),
-    awful.key({ altkey }, "Right", function () lain.util.tag_view_nonempty(1) end),
 
-    -- Default client focus
-    awful.key({ altkey }, "k",
-        function ()
-            awful.client.focus.byidx( 1)
-            if client.focus then client.focus:raise() end
-        end),
-    awful.key({ altkey }, "j",
-        function ()
-            awful.client.focus.byidx(-1)
-            if client.focus then client.focus:raise() end
-        end),
-
-    -- By direction client focus
-    awful.key({ modkey }, "j",
-        function()
-            awful.client.focus.bydirection("down")
-            if client.focus then client.focus:raise() end
-        end),
-    awful.key({ modkey }, "k",
-        function()
-            awful.client.focus.bydirection("up")
-            if client.focus then client.focus:raise() end
-        end),
-    awful.key({ modkey }, "h",
-        function()
-            awful.client.focus.bydirection("left")
-            if client.focus then client.focus:raise() end
-        end),
-    awful.key({ modkey }, "l",
-        function()
-            awful.client.focus.bydirection("right")
-            if client.focus then client.focus:raise() end
-        end),
-
-    -- Show Menu
-    awful.key({ modkey }, "w",
-        function ()
-            mymainmenu:show({ keygrabber = true })
-        end),
-
-    -- Show/Hide Wibox
-    awful.key({ modkey }, "b", function ()
-        mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
-    end),
-
-    keydoc.group("Layout Manipulation"),
-    -- Layout manipulation
-    awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end, "First"),
-    awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end, "Second"),
-    awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end),
-    awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end),
-    awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
-    awful.key({ modkey,           }, "Tab",
-        function ()
-            awful.client.focus.history.previous()
-            if client.focus then
-                client.focus:raise()
-            end
-        end),
-    awful.key({ altkey, "Shift"   }, "l",      function () awful.tag.incmwfact( 0.05)     end),
-    awful.key({ altkey, "Shift"   }, "h",      function () awful.tag.incmwfact(-0.05)     end),
-    awful.key({ modkey, "Shift"   }, "l",      function () awful.tag.incnmaster(-1)       end),
-    awful.key({ modkey, "Shift"   }, "h",      function () awful.tag.incnmaster( 1)       end),
-    awful.key({ modkey, "Control" }, "l",      function () awful.tag.incncol(-1)          end),
-    awful.key({ modkey, "Control" }, "h",      function () awful.tag.incncol( 1)          end),
-    awful.key({ modkey,           }, "space",  function () awful.layout.inc(layouts,  1)  end),
-    awful.key({ modkey, "Shift"   }, "space",  function () awful.layout.inc(layouts, -1)  end),
-    awful.key({ modkey, "Control" }, "n",      awful.client.restore),
-
-    -- Calculator
-    awful.key({modkey}, "c", function()
-        awful.prompt.run({ prompt = "Calculate: " }, mypromptbox[mouse.screen].widget,
-            function (expr)
-                local result = awful.util.eval("return (" .. expr .. ")")
-                naughty.notify({ text = expr .. " = " .. result, timeout = 10 })
-            end
-        )
-    end),
-
-    -- Screenshots with PrntScr Key
-    awful.key({}, "Print", function()
-        awful.util.spawn("scrot -e 'mv $f ~/pictures/screenshots/ 2>/dev/null'")
-    end),
-
-    keydoc.group("Standard"),
-    -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end, "Spawn Terminal"),
-    awful.key({ modkey, "Control" }, "r",      awesome.restart, "Restart Awesome"),
-    awful.key({ modkey, "Shift"   }, "q",      awesome.quit, "Quit Awesome"),
-
-    -- Dropdown terminal
-    awful.key({ modkey,	          }, "z",      function () drop(terminal) end),
-
-    -- Widgets popups
-    awful.key({ altkey,           }, "c",      function () lain.widgets.calendar:show(7) end),
-    
-    
-    -- ALSA volume control
-    awful.key({}, "XF86AudioRaiseVolume",
-        function ()
-            awful.util.spawn("amixer -q set Master 1%+")
-            volumewidget.update()
-        end),
-    awful.key({}, "XF86AudioLowerVolume",
-        function ()
-            awful.util.spawn("amixer -q set Master 1%-")
-            volumewidget.update()
-        end),
-    awful.key({}, "XF86AudioMute",
-        function ()
-            awful.util.spawn("amixer -q set Master playback toggle")
-            volumewidget.update()
-        end),
-
-    -- Revelation
-    awful.key({ modkey }, "e", revelation ),
-    awful.key({modkey}, "j",
-        function ()
-            awful.client.focus.byidx( 1)
-            if client.focus then client.focus:raise() end
-        end),
-
-    -- Brightness control
-    awful.key({}, "XF86BrightnessDown",
-        function()
-            awful.util.spawn("xbacklight -dec 15")
-        end),
-    awful.key({}, "XF86BrightnessUp",
-        function()
-            awful.util.spawn("xbacklight -inc 15")
-        end),
-
-    -- MPD control
-    awful.key({ altkey, "Control" }, "Up",
-        function ()
-            awful.util.spawn_with_shell("mpc toggle || ncmpc toggle || pms toggle")
-            mpdwidget.update()
-        end),
-    awful.key({ altkey, "Control" }, "Down",
-        function ()
-            awful.util.spawn_with_shell("mpc stop || ncmpc stop || pms stop")
-            mpdwidget.update()
-        end),
-    awful.key({ altkey, "Control" }, "Left",
-        function ()
-            awful.util.spawn_with_shell("mpc prev || ncmpc prev || pms prev")
-            mpdwidget.update()
-        end),
-    awful.key({ altkey, "Control" }, "Right",
-        function ()
-            awful.util.spawn_with_shell("mpc next || ncmpc next || pms next")
-            mpdwidget.update()
-        end),
-
-    -- Copy to clipboard
-    -- awful.key({ modkey }, "c", function () os.execute("xsel -p -o | xsel -i -b") end),
-
-    -- User programs
-    -- awful.key({ modkey }, "q", function () awful.util.spawn(browser) end),
-    awful.key({ modkey }, "g", function () awful.util.spawn(gui_editor) end),
-    awful.key({ modkey }, "i", function () awful.util.spawn(graphics) end),
-    
-    -- Prompt
-    --awful.key({ modkey }, "r", function () mypromptbox[mouse.screen]:run() end),
-    awful.key({ modkey }, "r",
-        function ()
-            awful.prompt.run({ prompt = "Run: ", hooks = {
-                {{         },"Return",function(command)
-                    local result = awful.util.spawn(command)
-                    awful.util.spawn()
-                                mypromptbox[mouse.screen].widget:set_text(type(result) == "string" and result or "")
-                    return true
-                end},
-                {{"Mod1"   },"Return",function(command)
-                    local result = awful.util.spawn(command,{intrusive=true})
-                    mypromptbox[mouse.screen].widget:set_text(type(result) == "string" and result or "")
-                    return true
-                end},
-                {{"Shift"  },"Return",function(command)
-                    local result = awful.util.spawn(command,{intrusive=true,ontop=true,floating=true})
-                    mypromptbox[mouse.screen].widget:set_text(type(result) == "string" and result or "")
-                    return true
-                end}
-            }},
-            mypromptbox[mouse.screen].widget,nil,
-            awful.completion.shell,
-            awful.util.getdir("cache") .. "/history")
-        end),
-    
-    awful.key({ modkey }, "q",
-        function ()
-            awful.util.spawn(terminal,{intrusive=true, floating=true})
-        end),
-    
-    awful.key({ modkey }, "x",
-              function ()
-                  awful.prompt.run({ prompt = "Run Lua code: " },
-                  mypromptbox[mouse.screen].widget,
-                  awful.util.eval, nil,
-                  awful.util.getdir("cache") .. "/history_eval")
-              end),
-
-    -- Web Search Prompt
-    awful.key({modkey}, "s", function()
-        awful.prompt.run({ prompt = "Web Search: "}, mypromptbox[mouse.screen].widget,
-            function (command)
-                awful.util.spawn("chromium 'http://yubnub.org/parser/parse?command="..command.."'", false)
-                -- Switch to the web tag, where firefox is, in this case tag 1
-                if tags[mouse.screen][1] then awful.tag.viewonly(tags[mouse.screen][1]) end
-            end)
-        end)
-)
-
-clientkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
-    awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
-    awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
-    awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
-    awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
-    awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
-    awful.key({ modkey,           }, "n",
-        function (c)
-            -- The client currently has the input focus, so it cannot be
-            -- minimized, since minimized clients can't have the focus.
-            c.minimized = true
-        end),
-    awful.key({ modkey,           }, "m",
-        function (c)
-            c.maximized_horizontal = not c.maximized_horizontal
-            c.maximized_vertical   = not c.maximized_vertical
-        end)
-)
-
--- Bind all key numbers to tags.
--- Be careful: we use keycodes to make it works on any keyboard layout.
--- This should map on the top row of your keyboard, usually 1 to 9.
-for i = 1, 9 do
-    globalkeys = awful.util.table.join(globalkeys,
-        awful.key({ modkey }, "#" .. i + 9,
-                  function ()
-                        local screen = mouse.screen
-                        local tag = awful.tag.gettags(screen)[i]
-                        if tag then
-                           awful.tag.viewonly(tag)
-                        end
-                  end),
-        awful.key({ modkey, "Control" }, "#" .. i + 9,
-                  function ()
-                      local screen = mouse.screen
-                      local tag = awful.tag.gettags(screen)[i]
-                      if tag then
-                         awful.tag.viewtoggle(tag)
-                      end
-                  end),
-        awful.key({ modkey, "Shift" }, "#" .. i + 9,
-                  function ()
-                      local tag = awful.tag.gettags(client.focus.screen)[i]
-                      if client.focus and tag then
-                          awful.client.movetotag(tag)
-                     end
-                  end),
-        awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
-                  function ()
-                      local tag = awful.tag.gettags(client.focus.screen)[i]
-                      if client.focus and tag then
-                          awful.client.toggletag(tag)
-                      end
-                  end))
-end
-
-clientbuttons = awful.util.table.join(
-    awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
-    awful.button({ modkey }, 1, awful.mouse.client.move),
-    awful.button({ modkey }, 3, awful.mouse.client.resize))
-
--- Set keys
-root.keys(globalkeys)
--- }}}
+-- Add keyboard shortcuts
+dofile(awful.util.getdir("config") .. "/shortcuts.lua")
 
 -- {{{ Rules
 awful.rules.rules = {
